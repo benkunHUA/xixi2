@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const axios = require('axios');
+const axios = require("axios");
 
 function getToken() {
   var apiKey = "b54b33c5ca5f03014ad0e57c7417b59f.iWwPFGQmXxsvPKhL";
@@ -16,16 +16,28 @@ function getToken() {
 }
 
 async function completions(data) {
-  const response = await axios.post('https://open.bigmodel.cn/api/paas/v4/chat/completions', data, {
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${getToken()}`
-    },
-  });
+  const response = await axios.post(
+    "https://open.bigmodel.cn/api/paas/v4/chat/completions",
+    data,
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${getToken()}`,
+      },
+      responseType: "stream",
+    }
+  );
   return response;
+}
+
+function adapt(chunk) {
+  let str = chunk.toString();
+  str = str.replace("data: ", "").trim();
+  return str
 }
 
 module.exports = {
   getToken,
-  completions
+  completions,
+  adapt,
 };
